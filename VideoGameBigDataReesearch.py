@@ -2,6 +2,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import requests
 
+output_csv = "re_vgsales.csv"
 
 def get_score_from_ign(df: pd.DataFrame):
     """
@@ -27,9 +28,11 @@ def get_score_from_ign(df: pd.DataFrame):
                 df.at[idx, "IGN"] = 0
         else:
             df.at[idx, "IGN"] = "ERR"
-    # df.drop("query",axis=1, inplace=True)
-    df.to_csv("re_vgsales.csv", index=False, encoding="utf-8-sig")
-    print(f"彙整完成，共{len(df)}筆資料\n{df.head(10)}")
+    return df
+
+def saveToCsv(df: pd.DataFrame):
+    df.to_csv(f"{df["Rank"].loc[0]}_{output_csv}", index=False)
+    print(f"Data saved to {df["Rank"].loc[0]}_{output_csv}")
 
 def main():
     df = pd.read_csv("dummy.csv")
@@ -43,7 +46,9 @@ def main():
     df["query"] = df["query"].str.replace("'", "")
     df["query"] = df["query"].str.replace(".", "")
     df["query"] = df["query"].str.replace(r"-+", "-", regex=True)
-    get_score_from_ign(df)
+    print(df["Rank"].loc[0])
+    df = get_score_from_ign(df)
+    saveToCsv(df)
 
 if __name__ == "__main__":
     main()
